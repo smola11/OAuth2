@@ -1,4 +1,8 @@
 package com.maciej.oauth2.authorization.server.handler;
 
-public class AuthorizationGrantTypeHandler {
+import javax.json.JsonObject;
+import javax.ws.rs.core.MultivaluedMap;
+
+public interface AuthorizationGrantTypeHandler {
+    JsonObject createAccessToken(String clientId, MultivaluedMap<String, String> params) throws Exception;
 }
