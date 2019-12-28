@@ -1,6 +1,5 @@
 package com.maciej.oauth2.authorization.server.api;
 
-
 import com.maciej.oauth2.authorization.server.handler.AuthorizationGrantTypeHandler;
 import com.maciej.oauth2.authorization.server.model.AppDataRepository;
 import com.maciej.oauth2.authorization.server.model.AuthorizationCode;
