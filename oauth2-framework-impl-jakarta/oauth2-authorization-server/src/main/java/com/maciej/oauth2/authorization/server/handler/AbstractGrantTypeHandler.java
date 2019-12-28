@@ -22,13 +22,13 @@ public abstract class AbstractGrantTypeHandler implements AuthorizationGrantType
     // JWS - JSON Web Signature
 
     // Always RSA 256, but could be parametrized
-    protected JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.RS256).type(JOSEObjectType.JWT).build();
+    private JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.RS256).type(JOSEObjectType.JWT).build();
 
     // 30 min
-    protected Long expiresInMin = 30L;
+    Long expiresInMin = 30L;
 
     @Inject
-    protected Config config;
+    private Config config;
 
     protected JWSVerifier getJWSVerifier() throws Exception {
         String verificationKey = config.getValue("verificationkey", String.class);
@@ -37,14 +37,14 @@ public abstract class AbstractGrantTypeHandler implements AuthorizationGrantType
         return new RSASSAVerifier(rsaPublicKey);
     }
 
-    protected JWSSigner getJwsSigner() throws Exception {
+    private JWSSigner getJwsSigner() throws Exception {
         String signingKey = config.getValue("signingkey", String.class);
         String pemEncodedRSAPrivateKey = PEMKeyUtils.readKeyAsString(signingKey);
         RSAKey rsaKey = (RSAKey) JWK.parseFromPEMEncodedObjects(pemEncodedRSAPrivateKey);
         return new RSASSASigner(rsaKey.toRSAPrivateKey());
     }
 
-    protected String getAccessToken(String clientId, String subject, String approvedScope) throws Exception {
+    String getAccessToken(String clientId, String subject, String approvedScope) throws Exception {
 
         JWSSigner jwsSigner = getJwsSigner();
         Instant now = Instant.now();
@@ -70,7 +70,7 @@ public abstract class AbstractGrantTypeHandler implements AuthorizationGrantType
         return signedJWT.serialize();
     }
 
-    protected String getRefreshToken(String clientId, String subject, String approvedScope) throws Exception {
+    String getRefreshToken(String clientId, String subject, String approvedScope) throws Exception {
 
         JWSSigner jwsSigner = getJwsSigner();
         Instant now = Instant.now();
