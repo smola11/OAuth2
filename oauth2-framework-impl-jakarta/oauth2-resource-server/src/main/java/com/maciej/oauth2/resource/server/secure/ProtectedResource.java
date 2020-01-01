@@ -23,7 +23,7 @@ public class ProtectedResource {
     @Path("/read")
     public Response read() {
         // Do staff
-        return Response.ok("Hello, " + principal.getName()).build();
+        return Response.ok("Hello, " + principal.getName() + ". Reading resource").build();
     }
 
     @POST
@@ -31,7 +31,7 @@ public class ProtectedResource {
     @Path("/write")
     public Response write() {
         // Do staff
-        return Response.ok("Hello, " + principal.getName())
+        return Response.ok("Hello, " + principal.getName() + ". Writing resource")
             .header("location", UUID.randomUUID().toString())
             .build();
     }

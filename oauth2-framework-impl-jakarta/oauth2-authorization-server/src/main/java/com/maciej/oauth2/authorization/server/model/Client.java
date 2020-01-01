@@ -16,7 +16,7 @@ public class Client {
 
     @Id
     @Column(name = "client_id")
-    private String clientID;
+    private String clientId;
     @Column(name = "client_secret")
     private String clientSecret;
     @Column(name = "redirect_uri")

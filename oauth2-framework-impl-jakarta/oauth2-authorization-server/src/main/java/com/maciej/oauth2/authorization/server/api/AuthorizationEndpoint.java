@@ -49,14 +49,15 @@ public class AuthorizationEndpoint {
                           @Context HttpServletResponse response,
                           @Context UriInfo uriInfo) throws ServletException, IOException {
 
-        MultivaluedMap<String, String> pathParameters = uriInfo.getPathParameters();
+        MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+
         //error about redirect_uri && client_id ==> forward user, thus to error.jsp.
         //otherwise ==> sendRedirect redirect_uri?error=error&error_description=error_description
 
         // 1. client_id
-        String clientId = pathParameters.getFirst("clientId");
+        String clientId = queryParameters.getFirst("client_id");
         if (clientId == null || clientId.isEmpty()) {
-            return informUserAboutError(request, response, "Invalid client_id :" + clientId);
+            return informUserAboutError(request, response, "Invalid client_id (empty or null) :" + clientId);
         }
         Client client = appDataRepository.getClient(clientId);
         if (client == null) {
@@ -70,31 +71,30 @@ public class AuthorizationEndpoint {
         }
 
         // 3. redirectUri
-        String redirectUri = pathParameters.getFirst("redirect_uri");
+        String redirectUri = queryParameters.getFirst("redirect_uri");
         if (client.getRedirectUri() != null && !client.getRedirectUri().isEmpty()) {
             if (redirectUri != null && !redirectUri.isEmpty() && !redirectUri.equals(client.getRedirectUri())) {
                 return informUserAboutError(request, response, "redirect_uri is pre-registered and should match");
             }
             redirectUri = client.getRedirectUri();
-            pathParameters.putSingle("resolved_redirect_uri", redirectUri);
+            queryParameters.putSingle("resolved_redirect_uri", redirectUri);
         } else {
             if (redirectUri == null || redirectUri.isEmpty()) {
                 return informUserAboutError(request, response, "redirect_uri is not pre-registred and should be provided");
             }
-            pathParameters.putSingle("resolved_redirect_uri", redirectUri);
+            queryParameters.putSingle("resolved_redirect_uri", redirectUri);
         }
 
         request.setAttribute("client", client);
 
         // 4. response_type
-        String responseType = pathParameters.getFirst("response_type");
+        String responseType = queryParameters.getFirst("response_type");
         if (!"code".equals(responseType) && !"token".equals(responseType)) {
-            //error = "invalid_grant :" + responseType + ", response_type params should be code or token:";
-            //return informUserAboutError(error);
+            return informUserAboutError(request, response, "invalid_grant :" + responseType + ", response_type params should be code or token.");
         }
 
         //Save params in session
-        request.getSession().setAttribute("ORIGINAL_PARAMS", pathParameters);
+        request.getSession().setAttribute("ORIGINAL_PARAMS", queryParameters);
 
         // 5.scope: Optional
         String requestedScope = request.getParameter("scope");
@@ -117,8 +117,8 @@ public class AuthorizationEndpoint {
     public Response doPost(@Context HttpServletRequest request, @Context HttpServletResponse response,
                            MultivaluedMap<String, String> params) throws Exception {
 
-        MultivaluedHashMap<String, String> originalParams =
-            (MultivaluedHashMap<String, String>) request.getSession().getAttribute("ORIGINAL_PARAMS");
+        MultivaluedMap<String, String> originalParams =
+            (MultivaluedMap<String, String>) request.getSession().getAttribute("ORIGINAL_PARAMS");
         if (originalParams == null) {
             return informUserAboutError(request, response, "No pending authorization request.");
         }
