@@ -22,14 +22,14 @@ import com.pluralsight.security.userdetails.AdditionalAuthenticationProvider;
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-	
+
 	@Autowired
 	private AdditionalAuthenticationProvider additionalProvider;
 	@Autowired
 	private UserDetailsService userDetailsService;
 	@Autowired
 	private PersistentTokenRepository persistentTokenRepository;
-	
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// @formatter:off
@@ -42,6 +42,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.rememberMe()
 				.tokenRepository(persistentTokenRepository)
 				.and()
+			.oauth2Login()
+				.loginPage("/login")
+			    .and()
 			.authorizeRequests()
 				.mvcMatchers("/register","/login","/login-error",
 						"/login-verified").permitAll()
@@ -54,31 +57,31 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.anyRequest().denyAll();
 		// @formatter:on
 	}
-	
+
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/css/**", "/webjars/**");
 	}
-	
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(additionalProvider);
 	}
-	
+
 	@Bean
 	public RedirectStrategy getRedirectStrategy() {
 		return new DefaultRedirectStrategy();
 	}
-	
+
 	@Override
 	protected UserDetailsService userDetailsService() {
 		return userDetailsService;
-	}	
-	
+	}
+
 	@Bean
 	public PasswordEncoder getPasswordEncoder() {
 		DelegatingPasswordEncoder encoder =  (DelegatingPasswordEncoder)PasswordEncoderFactories.createDelegatingPasswordEncoder();
-		return encoder;	
-	}	
-	
+		return encoder;
+	}
+
 }
