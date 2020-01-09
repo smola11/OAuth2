@@ -1,6 +1,8 @@
 package com.pluralsight.security.userdetails;
 
-public interface CryptoAuthenticatedPrincipal {
+import org.springframework.security.core.AuthenticatedPrincipal;
+
+public interface CryptoAuthenticatedPrincipal extends AuthenticatedPrincipal {
 
     String getFirstName();
 
