@@ -8,6 +8,9 @@ spring:
           facebook:
             client-id: 480333526007543
             client-secret: 27fc07fcb10976229e6c0449738880b7
+          google:
+            client-id: 796017590305-65sui4720d1k3qr3mdb9t3ouu68j1eda.apps.googleusercontent.com
+            client-secret: Zoiet2RKLsll9WVNinvBtikD
 
 logging:
   level:
