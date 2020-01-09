@@ -28,3 +28,5 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+
+.client_app_facebook_google_sso/application.yml
