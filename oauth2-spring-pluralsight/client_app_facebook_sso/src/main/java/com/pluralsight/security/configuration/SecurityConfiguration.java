@@ -1,5 +1,6 @@
 package com.pluralsight.security.configuration;
 
+import com.pluralsight.security.userdetails.Oauth2AuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private PersistentTokenRepository persistentTokenRepository;
 
+	@Autowired
+	private Oauth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// @formatter:off
@@ -42,9 +46,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.rememberMe()
 				.tokenRepository(persistentTokenRepository)
 				.and()
+
+			// OAuth 2
 			.oauth2Login()
 				.loginPage("/login")
+				.successHandler(oauth2AuthenticationSuccessHandler)
 			    .and()
+
 			.authorizeRequests()
 				.mvcMatchers("/register","/login","/login-error",
 						"/login-verified").permitAll()
