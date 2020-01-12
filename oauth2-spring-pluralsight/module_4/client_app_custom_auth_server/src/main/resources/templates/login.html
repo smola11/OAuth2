@@ -26,23 +26,13 @@
             <p th:if="${verified}" class="info">Your account has been verified!, Please sign-in</p>
             <div class="account-wall">
                 <form class="form-signin" th:action="@{/login}" method="post">
-                    <input type="text" name="username" class="form-control" placeholder="Username" required autofocus>
-                    <input type="password" name="password" class="form-control" placeholder="Password" required>
-                    <input type="password" name="securityPin" class="form-control" placeholder="Security pin" required>
-                    <button class="btn btn-lg btn-primary btn-block signup_btn" type="submit">
-                        Sign in
-                    </button>
-                    <label class="checkbox pull-left">
-                        <input type="checkbox" name="remember-me"/>
-                        Remember me
-                    </label>
                     <br>
-                    <br>
+                    <a class="btn btn-primary" href="/oauth2/authorization/crypto-portfolio">Login</a><br><br>
                     <a class="btn btn-primary" href="/oauth2/authorization/google">Login with Google</a><br><br>
                     <a class="btn btn-primary" href="/oauth2/authorization/facebook">Login with Facebook</a>
                 </form>
             </div>
-            <a href="/register" class="text-center new-account">Create an account </a>
+            <a href="http://localhost:8081/auth/register" class="text-center new-account">Create an account </a>
         </div>
     </div>
 </div>

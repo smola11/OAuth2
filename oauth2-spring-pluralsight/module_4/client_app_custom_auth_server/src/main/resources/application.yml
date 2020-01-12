@@ -12,6 +12,28 @@ spring:
             client-id: 796017590305-65sui4720d1k3qr3mdb9t3ouu68j1eda.apps.googleusercontent.com
             client-secret: Zoiet2RKLsll9WVNinvBtikD
 
+          crypto-portfolio:
+            client-id: crypto-portfolio
+            client-secret: secret
+            client-name: Crypto Portfolio
+            scope: user_info
+            redirect-uri: http://localhost:8080/login/oauth2/code/crypto-portfolio
+            client-authentication-method: basic
+            authorization-grant-type: authorization_code
+            provider: keycloak-provider
+
+          # We will register Authorization Server
+          provider:
+            keycloak-provider:
+              # Where the client can redirect the User's Browser to begin oauth2 flow.
+              authorization-uri: http://localhost:8081/auth/oauth/authorize
+              # Where the client can exchange the code for the access token.
+              token-uri: http://localhost:8081/auth/oauth/token
+              # Where the client can use access token to get the user's claims.
+              user-info-uri: http://localhost:8081/auth/userinfo
+              # What claim returned by the userinfo can be used to uniquely identify the user
+              user-name-attribute: username
+
 logging:
   level:
     root: INFO
