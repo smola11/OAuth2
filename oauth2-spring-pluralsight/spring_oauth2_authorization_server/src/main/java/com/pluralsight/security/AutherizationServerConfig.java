@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 @Configuration
 @EnableAuthorizationServer
 public class AutherizationServerConfig extends AuthorizationServerConfigurerAdapter {
+    // This also created a filter chain.
 
     private final PasswordEncoder passwordEncoder;
 

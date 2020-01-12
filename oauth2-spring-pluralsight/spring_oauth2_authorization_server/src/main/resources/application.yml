@@ -2,6 +2,10 @@ server:
   port: 8081
   servlet:
     context-path: /auth
+#    Browser does not consider port as part of domain (which is in our case "localhost". When we start client and server
+#    the browser would store the cookies under the same domain "localhost" and that would cause a clash.
+#    "context-path" ensures that the client web cookies will be stored under localhost and authorization server cookies
+#    under localhost/auth - in such way we avoid
 logging:
   level:
     org.springframework.security: INFO
