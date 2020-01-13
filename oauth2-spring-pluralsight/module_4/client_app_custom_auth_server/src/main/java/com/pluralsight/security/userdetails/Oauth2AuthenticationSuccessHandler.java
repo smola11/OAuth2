@@ -25,9 +25,6 @@ public class Oauth2AuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
         throws IOException {
         if (!this.portfolioCommandService.userHasAportfolio(authentication.getName())) {
-            // if authenticated via form login, getName() will be the username;
-            // if authenticated by OpenID Connect, getName() will be the claim subject;
-            // for non-OpenID providers it can vary
             CryptoAuthenticatedPrincipal principal = (CryptoAuthenticatedPrincipal) authentication.getPrincipal();
             UserOAuth2Dto user = new UserOAuth2Dto(principal.getFirstName(), principal.getLastName(), authentication.getName(), principal.getEmail());
             this.userRegistrationService.registerNewAuth2User(user);

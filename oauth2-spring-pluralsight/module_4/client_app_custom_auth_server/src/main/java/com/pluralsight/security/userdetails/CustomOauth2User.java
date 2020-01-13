@@ -6,18 +6,21 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
-public class FacebookConnectUser implements OAuth2User, CryptoAuthenticatedPrincipal {
+public class CustomOauth2User implements OAuth2User, CryptoAuthenticatedPrincipal {
 
-    // They will be resolved to what facebook returns form userInfo endpoint.
-    private String name;
-    private String id;
+    // They will be resolved to what our custom authorization server returns form userInfo endpoint.
+    private String username;
+    private String firstName;
+    private String lastName;
     private String email;
+    private String firstAndLastName;
     private List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_USER");
     private Map<String, Object> attributes;
 
@@ -25,27 +28,21 @@ public class FacebookConnectUser implements OAuth2User, CryptoAuthenticatedPrinc
     public Map<String, Object> getAttributes() {
         if (this.attributes == null) {
             this.attributes = new HashMap<>();
-            this.attributes.put("id", this.getId());
-            this.attributes.put("username", this.getName());
+            this.attributes.put("username", this.getUsername());
             this.attributes.put("email", this.getEmail());
-            this.attributes.put("given_name", this.getName().split(" ")[0]);
-            this.attributes.put("family_name", this.getName().split(" ")[1]);
+            this.attributes.put("given_name", this.getFirstName());
+            this.attributes.put("family_name", this.getLastName());
         }
         return attributes;
     }
 
     @Override
-    public String getFirstName() {
-        return this.getAttributes().get("given_name").toString();
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.authorities;
     }
 
     @Override
-    public String getLastName() {
-        return this.getAttributes().get("family_name").toString();
-    }
-
-    @Override
-    public String getFirstAndLastName() {
-        return getName();
+    public String getName() {
+        return this.username;
     }
 }
