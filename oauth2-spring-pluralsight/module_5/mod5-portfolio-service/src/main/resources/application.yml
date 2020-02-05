@@ -5,7 +5,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8081/auth/realms/CryptoInc
+          issuer-uri: http://localhost:8080/auth/realms/CryptoInc
            
 server:
    port: 8180
