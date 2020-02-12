@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -18,19 +19,21 @@ import com.pluralsight.security.service.KeycloakLogoutHandler;
 import com.pluralsight.security.userdetails.CryptoGrantedAuthoritiesMapper;
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-	
-	@Autowired
-	@Qualifier("oauth2authSuccessHandler")
-	private AuthenticationSuccessHandler oauth2authSuccessHandler;
-	@Autowired
-	private KeycloakLogoutHandler logoutHandler;	
 
-	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		// @formatter:off
+    @Autowired
+    @Qualifier("oauth2authSuccessHandler")
+    private AuthenticationSuccessHandler oauth2authSuccessHandler;
+    @Autowired
+    private KeycloakLogoutHandler logoutHandler;
+    @Autowired
+    private ClientRegistrationRepository clientRegistrationRepository;
+
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // @formatter:off
 		http
 			.logout().addLogoutHandler(logoutHandler)
 			.and()
@@ -38,6 +41,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.loginPage("/oauth2/authorization/crypto-portfolio")
 				.failureUrl("/login-error")
 				.successHandler(oauth2authSuccessHandler)
+			    .authorizationEndpoint().authorizationRequestResolver(
+			        // Custom Resolver added
+			        new CryptoOauth2AuthorizationRequestResolver(clientRegistrationRepository,
+                        "/oauth2/authorization")
+        )
+                .and()
 				.userInfoEndpoint()
 				.oidcUserService(new CryptoOidcUserService())				
 				.and()
@@ -50,22 +59,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.anyRequest().denyAll()
 				;
 		// @formatter:on
-	}
-	
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/css/**", "/webjars/**");
-	}
-	
-	@Bean
-	protected RedirectStrategy getRedirectStrategy() {
-		return new DefaultRedirectStrategy();
-	}	
-	
-	@Bean
-	protected GrantedAuthoritiesMapper getGrantedAuthoritiesMapper() {
-		return new CryptoGrantedAuthoritiesMapper();
-	}
-	
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/css/**", "/webjars/**");
+    }
+
+    @Bean
+    protected RedirectStrategy getRedirectStrategy() {
+        return new DefaultRedirectStrategy();
+    }
+
+    @Bean
+    protected GrantedAuthoritiesMapper getGrantedAuthoritiesMapper() {
+        return new CryptoGrantedAuthoritiesMapper();
+    }
+
 
 }
